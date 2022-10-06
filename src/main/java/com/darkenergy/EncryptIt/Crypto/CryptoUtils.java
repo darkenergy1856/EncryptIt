@@ -1,7 +1,5 @@
 package com.darkenergy.EncryptIt.Crypto;
 
-import com.darkenergy.EncryptIt.Crypto.CryptoException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
