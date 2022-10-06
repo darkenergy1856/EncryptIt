@@ -1,4 +1,4 @@
-package com.darkenergy.EncryptIt;
+package com.darkenergy.EncryptIt.EncryptionHandler;
 
 import com.darkenergy.EncryptIt.Crypto.CryptoException;
 import com.darkenergy.EncryptIt.Crypto.CryptoUtils;
