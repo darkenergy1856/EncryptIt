@@ -1,7 +1,6 @@
 package com.darkenergy.EncryptIt.KeyManager;
 
 public class keyManager {
-
     public static String keyPadded(String key) {
         String modifiedKey = key.trim();
 
