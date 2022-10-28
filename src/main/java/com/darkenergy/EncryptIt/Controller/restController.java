@@ -13,11 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/EncryptIt")
-@CrossOrigin
 public class restController {
     @PostMapping("/encrypt")
     public ResponseEntity<String> startEncryption(@RequestParam MultipartFile files, @RequestParam String key) throws IOException {
@@ -25,7 +24,7 @@ public class restController {
         File encryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
         String fileExtension = EncryptionHandler.getFileExtension(files.getOriginalFilename(), ".");
         int id = EncryptionHandler.startEncryption(encryptFile, key);
-        return new ResponseEntity<>(id + "#" + fileExtension + "@" + files.getContentType(), HttpStatus.OK);
+        return new ResponseEntity(id + "#" + fileExtension + "@" + files.getContentType() , HttpStatus.OK);
     }
 
 
