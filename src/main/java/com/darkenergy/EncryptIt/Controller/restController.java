@@ -6,51 +6,57 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
-
-
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/EncryptIt")
 @CrossOrigin
 public class restController {
-    @GetMapping("/encrypt")
-    public ResponseEntity<ByteArrayResource> startEncryption(@RequestParam MultipartFile files, @RequestParam String key) {
-        try {
-            File encryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
-            File encryptedFile = EncryptionHandler.startEncryption(encryptFile, key);
-            byte[] bytes = Files.readAllBytes(encryptedFile.toPath());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(files.getContentType()))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "encrypted" + files.getOriginalFilename() + "\"")
-                    .body(new ByteArrayResource(bytes));
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-        }
+    @PostMapping("/encrypt")
+    public ResponseEntity<String> startEncryption(@RequestParam MultipartFile files, @RequestParam String key) throws IOException {
+
+        File encryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
+        String fileExtension = EncryptionHandler.getFileExtension(files.getOriginalFilename(), ".");
+        int id = EncryptionHandler.startEncryption(encryptFile, key);
+        return new ResponseEntity<>(id + "#" + fileExtension + "@" + files.getContentType(), HttpStatus.OK);
     }
 
-    @GetMapping("/decrypt")
-    public ResponseEntity<ByteArrayResource> startDecryption(@RequestParam MultipartFile files, @RequestParam String key) {
-        try {
-            File decryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
-            File decryptedFile = EncryptionHandler.startDecryption(decryptFile, key);
-            byte[] bytes = Files.readAllBytes(decryptedFile.toPath());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(files.getContentType()))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "decrypted" + files.getOriginalFilename() + "\"")
-                    .body(new ByteArrayResource(bytes));
 
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-        }
+    @GetMapping("/downloadFile")
+    public ResponseEntity<ByteArrayResource> downloadService(@RequestParam String fileId) throws IOException {
+        String contType = EncryptionHandler.getFileExtension(fileId, "@");
+        System.out.println(contType);
+
+        int lastIndex = fileId.lastIndexOf("@");
+        System.out.println(fileId.substring(0, lastIndex));
+
+        int hashIndex = fileId.lastIndexOf("#");
+
+        String extension = fileId.substring(hashIndex + 1, lastIndex);
+        System.out.println(extension);
+
+
+        File toBeSent = new File(System.getProperty("java.io.tmpdir") + "/" + fileId.toString().substring(0, hashIndex));
+        byte[] bytes = Files.readAllBytes(toBeSent.toPath());
+        System.out.println(Path.of(toBeSent.getPath()));
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(contType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "File" + "." + extension + "\"")
+                .body(new ByteArrayResource(bytes));
+    }
+
+    @PostMapping("/decrypt")
+    public ResponseEntity<String> startDecryption(@RequestParam MultipartFile files, @RequestParam String key) throws IOException {
+        File encryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
+        String fileExtension = EncryptionHandler.getFileExtension(files.getOriginalFilename(), ".");
+        int id = EncryptionHandler.startDecryption(encryptFile, key);
+        return new ResponseEntity<>(id + "#" + fileExtension + "@" + files.getContentType(), HttpStatus.OK);
     }
 }

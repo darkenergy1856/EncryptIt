@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.4</version>
+		<version>2.7.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.darkenergy</groupId>
 	<artifactId>EncryptIt</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>EncryptIt</name>
 	<description>Test Project</description>
 	<properties>
@@ -48,6 +48,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.activation</groupId>
+			<artifactId>jakarta.activation-api</artifactId>
 		</dependency>
 	</dependencies>
 

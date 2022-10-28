@@ -9,53 +9,60 @@ import java.io.File;
 import java.io.IOException;
 
 public class EncryptionHandler {
+    static int count = 1;
+
+    public static String getFileExtension(String fileName, String symbol) {
+        int lastIndexOf = fileName.lastIndexOf(symbol);
+        if (lastIndexOf == -1) {
+            return "";
+        }
+        return fileName.substring(lastIndexOf + 1);
+    }
+
     public static File multipartToFile(MultipartFile multipart, String fileName) throws IOException {
         File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
         multipart.transferTo(convFile);
         return convFile;
     }
 
-    public static File startEncryption(File file, String key){
-        if (key.equals("")){
-            return null;
-        }else {
-            key = keyManager.keyPadded(key);
-        }
+    public static int startEncryption(File file, String key) {
+
+        String extension = getFileExtension(file.getName(), ".");
+        key = keyManager.keyPadded(key);
         try {
-            File encryptedFile = new File(System.getProperty("java.io.tmpdir") + "/" + "encrypt");
+            File encryptedFile = new File(System.getProperty("java.io.tmpdir") + "/" + count);
+            count++;
 
             try {
                 CryptoUtils.encrypt(key, file, encryptedFile);
-                return encryptedFile;
+                return (count - 1);
             } catch (CryptoException ex) {
                 System.out.println(ex.getMessage());
-                return null;
             }
-        }catch (Exception exe){
+        } catch (Exception exe) {
             exe.printStackTrace();
-            return null;
         }
+        return 0;
     }
 
-    public static File startDecryption(File file, String key) {
+    public static int startDecryption(File file, String key) {
 
-        if (key.equals("")){
-            return null;
-        }else {
-            key = keyManager.keyPadded(key);
-        }
+        String extension = getFileExtension(file.getName(), ".");
+        key = keyManager.keyPadded(key);
 
-        File decryptedFile = new File(System.getProperty("java.io.tmpdir") + "/" + "decrypt");
+        File decryptedFile = new File(System.getProperty("java.io.tmpdir") + "/" + count);
+        count++;
 
         try {
             CryptoUtils.decrypt(key, file, decryptedFile);
-            return decryptedFile;
+            return (count - 1);
         } catch (CryptoException ex) {
             System.out.println(ex.getMessage());
-            return null;
         }
-
+        return 0;
     }
+
+
 }
 
 
