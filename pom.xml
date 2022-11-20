@@ -14,7 +14,7 @@
 	<name>EncryptIt</name>
 	<description>Test Project</description>
 	<properties>
-		<java.version>19</java.version>
+		<java.version>15</java.version>
 	</properties>
 	<dependencies>
 
