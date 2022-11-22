@@ -13,18 +13,28 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-@CrossOrigin
+@CrossOrigin()
 @RestController
-@RequestMapping("/EncryptIt")
+@RequestMapping()
 public class restController {
+    @GetMapping("/hello")
+    public Collection<String> sayHello() {
+        return IntStream.range(0, 10)
+                .mapToObj(i -> "Hello number " + i)
+                .collect(Collectors.toList());
+    }
     @PostMapping("/encrypt")
     public ResponseEntity<String> startEncryption(@RequestParam MultipartFile files, @RequestParam String key) throws IOException {
 
         File encryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
-        String fileExtension = EncryptionHandler.getFileExtension(files.getOriginalFilename(), ".");
+        String fileExtension = EncryptionHandler.getFileExtension(Objects.requireNonNull(files.getOriginalFilename()), ".");
         int id = EncryptionHandler.startEncryption(encryptFile, key);
-        return new ResponseEntity(id + "#" + fileExtension + "@" + files.getContentType() , HttpStatus.OK);
+        return new ResponseEntity<>(id + "#" + fileExtension + "@" + files.getContentType(), HttpStatus.OK);
     }
 
 
@@ -42,7 +52,7 @@ public class restController {
         System.out.println(extension);
 
 
-        File toBeSent = new File(System.getProperty("java.io.tmpdir") + "/" + fileId.toString().substring(0, hashIndex));
+        File toBeSent = new File(System.getProperty("java.io.tmpdir") + "/" + fileId.substring(0, hashIndex));
         byte[] bytes = Files.readAllBytes(toBeSent.toPath());
         System.out.println(Path.of(toBeSent.getPath()));
         return ResponseEntity.ok()
@@ -54,7 +64,7 @@ public class restController {
     @PostMapping("/decrypt")
     public ResponseEntity<String> startDecryption(@RequestParam MultipartFile files, @RequestParam String key) throws IOException {
         File encryptFile = EncryptionHandler.multipartToFile(files, files.getOriginalFilename());
-        String fileExtension = EncryptionHandler.getFileExtension(files.getOriginalFilename(), ".");
+        String fileExtension = EncryptionHandler.getFileExtension(Objects.requireNonNull(files.getOriginalFilename()), ".");
         int id = EncryptionHandler.startDecryption(encryptFile, key);
         return new ResponseEntity<>(id + "#" + fileExtension + "@" + files.getContentType(), HttpStatus.OK);
     }

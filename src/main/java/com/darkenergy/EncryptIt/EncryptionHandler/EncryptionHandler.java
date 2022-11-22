@@ -27,7 +27,6 @@ public class EncryptionHandler {
 
     public static int startEncryption(File file, String key) {
 
-        String extension = getFileExtension(file.getName(), ".");
         key = keyManager.keyPadded(key);
         try {
             File encryptedFile = new File(System.getProperty("java.io.tmpdir") + "/" + count);
@@ -47,7 +46,6 @@ public class EncryptionHandler {
 
     public static int startDecryption(File file, String key) {
 
-        String extension = getFileExtension(file.getName(), ".");
         key = keyManager.keyPadded(key);
 
         File decryptedFile = new File(System.getProperty("java.io.tmpdir") + "/" + count);
